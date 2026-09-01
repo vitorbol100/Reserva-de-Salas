@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Relatório de Ocupação{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-lg font-semibold text-slate-800">Taxa de ocupação das salas</h1>
+
+        <form method="GET" class="flex gap-3 items-end">
+            <div>
+                <label class="text-xs text-slate-500">De</label>
+                <input type="date" name="data_inicio" value="{{ data_inicio }}"
+                       class="block px-3 py-1.5 rounded-lg border border-slate-200 text-sm">
+            </div>
+            <div>
+                <label class="text-xs text-slate-500">Até</label>
+                <input type="date" name="data_fim" value="{{ data_fim }}"
+                       class="block px-3 py-1.5 rounded-lg border border-slate-200 text-sm">
+            </div>
+            <button type="submit" class="bg-indigo-600 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-indigo-700">
+                Filtrar
+            </button>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for item in dados %}
+        <div class="border border-slate-100 rounded-xl p-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-medium text-slate-800">{{ item.sala }}</span>
+                <span class="text-sm text-slate-500">{{ item.capacidade }} lugares</span>
+            </div>
+
+            <div class="w-full bg-slate-100 rounded-full h-2 mb-2">
+                <div class="bg-indigo-500 h-2 rounded-full" style="width: {{ item.taxa_ocupacao }}%"></div>
+            </div>
+
+            <div class="flex justify-between text-sm text-slate-500">
+                <span>{{ item.taxa_ocupacao }}% ocupação</span>
+                <span>{{ item.total_reservas }} reuniões · {{ item.horas_usadas }}h</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

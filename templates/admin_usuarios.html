@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Gestão de Usuários{% endblock %}
+
+{% block content %}
+<h1 class="text-xl font-semibold text-slate-800 mb-6">Gestão de usuários</h1>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Formulário de novo usuário -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 h-fit">
+        <h2 class="font-medium text-slate-800 mb-4">Criar novo usuário</h2>
+        <form method="POST" action="{{ url_for('admin.criar_usuario') }}" class="space-y-4">
+            <div>
+                <label class="text-sm text-slate-600">Nome</label>
+                <input type="text" name="nome" required
+                       class="w-full mt-1 px-4 py-2 rounded-lg border border-slate-200">
+            </div>
+            <div>
+                <label class="text-sm text-slate-600">E-mail</label>
+                <input type="email" name="email" required
+                       class="w-full mt-1 px-4 py-2 rounded-lg border border-slate-200">
+            </div>
+            <div>
+                <label class="text-sm text-slate-600">Senha inicial</label>
+                <input type="password" name="senha" required
+                       class="w-full mt-1 px-4 py-2 rounded-lg border border-slate-200">
+            </div>
+            <div>
+                <label class="text-sm text-slate-600">Nível de acesso</label>
+                <select name="nivel" required class="w-full mt-1 px-4 py-2 rounded-lg border border-slate-200">
+                    <option value="colaborador">Colaborador</option>
+                    <option value="recepcionista">Recepcionista</option>
+                    <option value="administrador">Administrador</option>
+                </select>
+            </div>
+            <button type="submit"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition">
+                Criar usuário
+            </button>
+        </form>
+    </div>
+
+    <!-- Lista de usuários -->
+    <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
+        <table class="w-full text-sm min-w-[600px]">
+            <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                <tr>
+                    <th class="text-left px-6 py-3">Nome</th>
+                    <th class="text-left px-6 py-3">E-mail</th>
+                    <th class="text-left px-6 py-3">Nível</th>
+                    <th class="text-left px-6 py-3">Status</th>
+                    <th class="text-left px-6 py-3">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for u in usuarios %}
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-3 text-slate-700">{{ u.nome }}</td>
+                    <td class="px-6 py-3 text-slate-500">{{ u.email }}</td>
+                    <td class="px-6 py-3">
+                        <form method="POST" action="{{ url_for('admin.alterar_nivel', usuario_id=u.id) }}">
+                            <select name="nivel" onchange="this.form.submit()"
+                                    class="text-xs border border-slate-200 rounded-lg px-2 py-1">
+                                <option value="colaborador" {% if u.nivel == 'colaborador' %}selected{% endif %}>Colaborador</option>
+                                <option value="recepcionista" {% if u.nivel == 'recepcionista' %}selected{% endif %}>Recepcionista</option>
+                                <option value="administrador" {% if u.nivel == 'administrador' %}selected{% endif %}>Administrador</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td class="px-6 py-3">
+                        <span class="text-xs px-2 py-1 rounded-full
+                            {% if u.ativo %} bg-emerald-50 text-emerald-700 {% else %} bg-red-50 text-red-700 {% endif %}">
+                            {{ 'Ativo' if u.ativo else 'Inativo' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-3">
+                        <form method="POST" action="{{ url_for('admin.desativar_usuario', usuario_id=u.id) }}">
+                            <button type="submit"
+                                    class="text-xs px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
+                                {{ 'Desativar' if u.ativo else 'Ativar' }}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

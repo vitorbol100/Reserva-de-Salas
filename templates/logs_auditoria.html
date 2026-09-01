@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Auditoria do Sistema{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+            <a href="{{ url_for('recepcionista.painel') }}"
+               class="text-sm text-indigo-600 hover:text-indigo-800">
+                ← Voltar para o painel
+            </a>
+
+            <h1 class="text-2xl font-semibold text-slate-800 mt-3">
+                Histórico de auditoria
+            </h1>
+
+            <p class="text-sm text-slate-500 mt-1">
+                Registro das principais ações realizadas no sistema.
+            </p>
+        </div>
+
+        <span class="inline-flex items-center px-3 py-1.5 rounded-full
+                     bg-slate-100 text-slate-600 text-sm">
+            {{ logs|length }} registro(s)
+        </span>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    {% if logs %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm min-w-[900px]">
+                <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                    <tr>
+                        <th class="text-left px-6 py-3">Data e hora</th>
+                        <th class="text-left px-6 py-3">Usuário</th>
+                        <th class="text-left px-6 py-3">Ação</th>
+                        <th class="text-left px-6 py-3">Entidade</th>
+                        <th class="text-left px-6 py-3">ID</th>
+                        <th class="text-left px-6 py-3">Detalhes</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-100">
+                    {% for log in logs %}
+                        <tr class="hover:bg-slate-50 align-top">
+                            <td class="px-6 py-4 text-slate-500 whitespace-nowrap">
+                                {% if log.criado_em %}
+                                    {{ log.criado_em.strftime('%d/%m/%Y %H:%M:%S') }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                {% if log.usuario %}
+                                    <div class="font-medium text-slate-700">
+                                        {{ log.usuario.nome }}
+                                    </div>
+                                    <div class="text-xs text-slate-400">
+                                        {{ log.usuario.email }}
+                                    </div>
+                                {% else %}
+                                    <span class="text-slate-400">
+                                        Sistema
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full
+                                    {% if 'cancel' in log.acao or 'exclu' in log.acao %}
+                                        bg-red-50 text-red-700
+                                    {% elif 'criou' in log.acao or 'criad' in log.acao %}
+                                        bg-emerald-50 text-emerald-700
+                                    {% elif 'moveu' in log.acao or 'alter' in log.acao %}
+                                        bg-amber-50 text-amber-700
+                                    {% else %}
+                                        bg-indigo-50 text-indigo-700
+                                    {% endif %}">
+                                    {{ log.acao|replace('_', ' ')|capitalize }}
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4 text-slate-600">
+                                {{ log.entidade|capitalize }}
+                            </td>
+
+                            <td class="px-6 py-4 text-slate-500">
+                                {{ log.entidade_id if log.entidade_id else '—' }}
+                            </td>
+
+                            <td class="px-6 py-4 text-slate-500 max-w-md">
+                                <p class="break-words">
+                                    {{ log.detalhes or 'Sem detalhes adicionais' }}
+                                </p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="px-6 py-12 text-center">
+            <div class="text-4xl mb-3">—</div>
+            <h2 class="font-medium text-slate-700">
+                Nenhum registro encontrado
+            </h2>
+            <p class="text-sm text-slate-400 mt-1">
+                As ações realizadas aparecerão nesta página.
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

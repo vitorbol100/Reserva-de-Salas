@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Bloqueio Recorrente{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="mb-6">
+        <a href="{{ url_for('recepcionista.painel') }}"
+           class="text-sm text-indigo-600 hover:text-indigo-800">
+            ← Voltar para o painel
+        </a>
+
+        <h1 class="text-2xl font-semibold text-slate-800 mt-3">
+            Criar bloqueio recorrente
+        </h1>
+
+        <p class="text-sm text-slate-500 mt-1">
+            Use esta opção para bloquear uma sala em dias e horários repetidos.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <form method="POST" class="space-y-6">
+
+            <div>
+                <label for="sala_id" class="block text-sm font-medium text-slate-700">
+                    Sala
+                </label>
+
+                <select
+                    id="sala_id"
+                    name="sala_id"
+                    required
+                    class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                           focus:outline-none focus:ring-2 focus:ring-indigo-400">
+
+                    <option value="">Selecione uma sala</option>
+
+                    {% for sala in salas %}
+                        <option value="{{ sala.id }}">
+                            {{ sala.nome }} — {{ sala.capacidade }} lugares
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-3">
+                    Dias da semana
+                </label>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200
+                                  hover:bg-slate-50 cursor-pointer">
+                        <input type="checkbox" name="dias_semana" value="0"
+                               class="rounded text-indigo-600 focus:ring-indigo-400">
+                        <span class="text-sm text-slate-700">Segunda</span>
+                    </label>
+
+                    <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200
+                                  hover:bg-slate-50 cursor-pointer">
+                        <input type="checkbox" name="dias_semana" value="1"
+                               class="rounded text-indigo-600 focus:ring-indigo-400">
+                        <span class="text-sm text-slate-700">Terça</span>
+                    </label>
+
+                    <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200
+                                  hover:bg-slate-50 cursor-pointer">
+                        <input type="checkbox" name="dias_semana" value="2"
+                               class="rounded text-indigo-600 focus:ring-indigo-400">
+                        <span class="text-sm text-slate-700">Quarta</span>
+                    </label>
+
+                    <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200
+                                  hover:bg-slate-50 cursor-pointer">
+                        <input type="checkbox" name="dias_semana" value="3"
+                               class="rounded text-indigo-600 focus:ring-indigo-400">
+                        <span class="text-sm text-slate-700">Quinta</span>
+                    </label>
+
+                    <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200
+                                  hover:bg-slate-50 cursor-pointer">
+                        <input type="checkbox" name="dias_semana" value="4"
+                               class="rounded text-indigo-600 focus:ring-indigo-400">
+                        <span class="text-sm text-slate-700">Sexta</span>
+                    </label>
+
+                    <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200
+                                  hover:bg-slate-50 cursor-pointer">
+                        <input type="checkbox" name="dias_semana" value="5"
+                               class="rounded text-indigo-600 focus:ring-indigo-400">
+                        <span class="text-sm text-slate-700">Sábado</span>
+                    </label>
+
+                    <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200
+                                  hover:bg-slate-50 cursor-pointer">
+                        <input type="checkbox" name="dias_semana" value="6"
+                               class="rounded text-indigo-600 focus:ring-indigo-400">
+                        <span class="text-sm text-slate-700">Domingo</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="hora_inicio" class="block text-sm font-medium text-slate-700">
+                        Primeiro dia e horário inicial
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="hora_inicio"
+                        name="hora_inicio"
+                        required
+                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                               focus:outline-none focus:ring-2 focus:ring-indigo-400">
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        A data serve como início da recorrência.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="hora_fim" class="block text-sm font-medium text-slate-700">
+                        Horário final
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="hora_fim"
+                        name="hora_fim"
+                        required
+                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                               focus:outline-none focus:ring-2 focus:ring-indigo-400">
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        O sistema utilizará somente o horário final.
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <label for="data_ate" class="block text-sm font-medium text-slate-700">
+                    Repetir até
+                </label>
+
+                <input
+                    type="date"
+                    id="data_ate"
+                    name="data_ate"
+                    required
+                    class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                           focus:outline-none focus:ring-2 focus:ring-indigo-400">
+
+                <p class="text-xs text-slate-400 mt-1">
+                    Serão criados bloqueios até esta data.
+                </p>
+            </div>
+
+            <div>
+                <label for="motivo" class="block text-sm font-medium text-slate-700">
+                    Motivo do bloqueio
+                </label>
+
+                <textarea
+                    id="motivo"
+                    name="motivo"
+                    rows="4"
+                    required
+                    placeholder="Ex.: Reunião fixa da diretoria, manutenção semanal..."
+                    class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                           focus:outline-none focus:ring-2 focus:ring-indigo-400"></textarea>
+            </div>
+
+            <div id="mensagem-formulario"
+                 class="hidden rounded-lg px-4 py-3 text-sm">
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <a href="{{ url_for('recepcionista.painel') }}"
+                   class="px-5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200
+                          text-slate-700 text-sm transition">
+                    Cancelar
+                </a>
+
+                <button
+                    type="submit"
+                    class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700
+                           text-white text-sm font-medium transition">
+                    Criar bloqueios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const campoInicio = document.getElementById("hora_inicio");
+const campoFim = document.getElementById("hora_fim");
+const campoDataAte = document.getElementById("data_ate");
+const mensagemFormulario = document.getElementById("mensagem-formulario");
+
+function validarFormulario() {
+    const diasSelecionados = document.querySelectorAll(
+        'input[name="dias_semana"]:checked'
+    );
+
+    mensagemFormulario.classList.remove("hidden");
+
+    if (diasSelecionados.length === 0) {
+        mensagemFormulario.textContent =
+            "Selecione pelo menos um dia da semana.";
+        mensagemFormulario.className =
+            "rounded-lg px-4 py-3 text-sm bg-red-50 text-red-700 border border-red-200";
+        return false;
+    }
+
+    if (!campoInicio.value || !campoFim.value || !campoDataAte.value) {
+        mensagemFormulario.textContent =
+            "Preencha todas as datas e horários.";
+        mensagemFormulario.className =
+            "rounded-lg px-4 py-3 text-sm bg-red-50 text-red-700 border border-red-200";
+        return false;
+    }
+
+    const inicio = new Date(campoInicio.value);
+    const fim = new Date(campoFim.value);
+    const dataAte = new Date(`${campoDataAte.value}T23:59`);
+
+    if (fim <= inicio) {
+        mensagemFormulario.textContent =
+            "O horário final deve ser posterior ao horário inicial.";
+        mensagemFormulario.className =
+            "rounded-lg px-4 py-3 text-sm bg-red-50 text-red-700 border border-red-200";
+        return false;
+    }
+
+    if (dataAte < inicio) {
+        mensagemFormulario.textContent =
+            "A data final da recorrência deve ser posterior ou igual à data inicial.";
+        mensagemFormulario.className =
+            "rounded-lg px-4 py-3 text-sm bg-red-50 text-red-700 border border-red-200";
+        return false;
+    }
+
+    mensagemFormulario.textContent =
+        "Configuração válida. Os bloqueios serão criados para os dias selecionados.";
+    mensagemFormulario.className =
+        "rounded-lg px-4 py-3 text-sm bg-emerald-50 text-emerald-700 border border-emerald-200";
+
+    return true;
+}
+
+document.querySelector("form").addEventListener("submit", function(event) {
+    if (!validarFormulario()) {
+        event.preventDefault();
+    }
+});
+</script>
+{% endblock %}

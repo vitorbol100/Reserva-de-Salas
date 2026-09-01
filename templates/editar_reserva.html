@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Editar Reunião{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 max-w-lg mx-auto">
+    <h1 class="text-lg font-semibold text-slate-800 mb-6">Editar reunião</h1>
+
+    <form method="POST" class="space-y-4">
+        <div>
+            <label class="text-sm text-slate-600">Sala</label>
+            <select name="sala_id" required
+                    class="w-full mt-1 px-4 py-2 rounded-lg border border-slate-200">
+                {% for sala in salas %}
+                    <option value="{{ sala.id }}" {% if sala.id == reserva.sala_id %}selected{% endif %}>
+                        {{ sala.nome }} — {{ sala.capacidade }} lugares
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="text-sm text-slate-600">Título da reunião</label>
+            <input type="text" name="titulo" required value="{{ reserva.titulo }}"
+                   class="w-full mt-1 px-4 py-2 rounded-lg border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="text-sm text-slate-600">Início</label>
+                <input type="datetime-local" name="inicio" required
+                       value="{{ reserva.inicio.strftime('%Y-%m-%dT%H:%M') }}"
+                       class="w-full mt-1 px-4 py-2 rounded-lg border border-slate-200">
+            </div>
+            <div>
+                <label class="text-sm text-slate-600">Fim</label>
+                <input type="datetime-local" name="fim" required
+                       value="{{ reserva.fim.strftime('%Y-%m-%dT%H:%M') }}"
+                       class="w-full mt-1 px-4 py-2 rounded-lg border border-slate-200">
+            </div>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+            <button type="submit"
+                    class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg transition">
+                Salvar alterações
+            </button>
+            <a href="{{ url_for('colaborador.painel') }}"
+               class="flex-1 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 rounded-lg transition">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

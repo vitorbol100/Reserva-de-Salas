@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Painel da Recepção{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6 flex-wrap gap-3">
+    <h1 class="text-xl font-semibold text-slate-800">Gestão de salas e reuniões</h1>
+    <div class="flex gap-2 flex-wrap">
+        <a href="{{ url_for('recepcionista.nova_reserva_para_colaborador') }}"
+           class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition">
+            + Nova reunião
+        </a>
+        <a href="{{ url_for('recepcionista.bloquear_sala') }}"
+           class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition">
+            Bloquear sala
+        </a>
+        <a href="{{ url_for('recepcionista.bloquear_sala_recorrente') }}"
+           class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition">
+            Bloqueio recorrente
+        </a>
+        <a href="{{ url_for('relatorios.ocupacao') }}"
+           class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition">
+            Relatório
+        </a>
+        <a href="{{ url_for('relatorios.auditoria') }}"
+           class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition">
+            Auditoria
+        </a>
+    </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
+    <table class="w-full text-sm min-w-[900px]">
+        <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+            <tr>
+                <th class="text-left px-6 py-3">Título</th>
+                <th class="text-left px-6 py-3">Colaborador</th>
+                <th class="text-left px-6 py-3">Sala</th>
+                <th class="text-left px-6 py-3">Início</th>
+                <th class="text-left px-6 py-3">Fim</th>
+                <th class="text-left px-6 py-3">Status</th>
+                <th class="text-left px-6 py-3">Ações</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for r in reservas %}
+            <tr class="hover:bg-slate-50">
+                <td class="px-6 py-3 text-slate-700">{{ r.titulo }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ r.usuario.nome }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ r.sala.nome }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ r.inicio.strftime('%d/%m %H:%M') }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ r.fim.strftime('%d/%m %H:%M') }}</td>
+                <td class="px-6 py-3">
+                    <span class="text-xs px-2 py-1 rounded-full
+                        {% if r.status == 'confirmada' %} bg-emerald-50 text-emerald-700
+                        {% elif r.status == 'em_andamento' %} bg-amber-50 text-amber-700
+                        {% else %} bg-slate-100 text-slate-600 {% endif %}">
+                        {{ r.status }}
+                    </span>
+                </td>
+                <td class="px-6 py-3">
+                    <div class="flex items-center gap-2">
+                        <!-- Mover -->
+                        <form method="POST" action="{{ url_for('recepcionista.mover_reserva', reserva_id=r.id) }}"
+                              class="flex items-center gap-1">
+                            <select name="nova_sala_id" class="text-xs border border-slate-200 rounded-lg px-2 py-1">
+                                {% for sala in salas %}
+                                    <option value="{{ sala.id }}" {% if sala.id == r.sala_id %}selected{% endif %}>
+                                        {{ sala.nome }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit"
+                                    class="text-xs px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100">
+                                Mover
+                            </button>
+                        </form>
+
+                        <!-- Excluir -->
+                        <form method="POST" action="{{ url_for('recepcionista.excluir_reserva', reserva_id=r.id) }}"
+                              onsubmit="return confirm('Tem certeza que deseja excluir esta reunião?');">
+                            <button type="submit"
+                                    class="text-xs px-2 py-1 rounded-lg bg-red-50 text-red-700 hover:bg-red-100">
+                                Excluir
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="px-6 py-8 text-center text-slate-400 text-sm">
+                    Nenhuma reunião marcada no momento.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

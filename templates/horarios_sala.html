@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Horários - {{ sala.nome }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden max-w-2xl mx-auto">
+    <div class="px-6 py-4 border-b border-slate-100" style="background: {{ sala.cor_fundo }}; color: {{ sala.cor_texto }};">
+        <h1 class="text-lg font-semibold">{{ sala.nome }}</h1>
+        <p class="text-sm opacity-90">{{ sala.capacidade }} lugares</p>
+    </div>
+
+    {% if reservas %}
+    <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+            <tr>
+                <th class="text-left px-6 py-3">Título</th>
+                <th class="text-left px-6 py-3">Responsável</th>
+                <th class="text-left px-6 py-3">Início</th>
+                <th class="text-left px-6 py-3">Fim</th>
+                <th class="text-left px-6 py-3">Status</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for r in reservas %}
+            <tr class="hover:bg-slate-50">
+                <td class="px-6 py-3 text-slate-700">{{ r.titulo }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ r.usuario.nome }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ r.inicio.strftime('%d/%m %H:%M') }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ r.fim.strftime('%H:%M') }}</td>
+                <td class="px-6 py-3">
+                    <span class="text-xs px-2 py-1 rounded-full
+                        {% if r.status == 'confirmada' %} bg-emerald-50 text-emerald-700
+                        {% else %} bg-amber-50 text-amber-700 {% endif %}">
+                        {{ r.status }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="px-6 py-8 text-center text-slate-400 text-sm">Nenhum horário marcado para esta sala.</p>
+    {% endif %}
+</div>
+{% endblock %}
