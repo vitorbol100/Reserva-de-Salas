@@ -31,8 +31,33 @@ def apenas_recepcionista(f):
 @apenas_recepcionista
 def painel():
     salas = Sala.query.filter_by(ativa=True).all()
-    reservas = Reserva.query.filter_by(status="confirmada").order_by(Reserva.inicio).all()
-    return render_template("recepcionista_painel.html", salas=salas, reservas=reservas)
+
+    # Filtro por data (padrão: hoje). Aceita ?data=AAAA-MM-DD na URL.
+    data_str = request.args.get("data")
+    if data_str:
+        try:
+            data_filtro = datetime.strptime(data_str, "%Y-%m-%d").date()
+        except ValueError:
+            data_filtro = datetime.now().date()
+    else:
+        data_filtro = datetime.now().date()
+
+    inicio_dia = datetime.combine(data_filtro, datetime.min.time())
+    fim_dia = datetime.combine(data_filtro, datetime.max.time())
+
+    reservas = Reserva.query.filter(
+        Reserva.status != "cancelada",
+        Reserva.inicio >= inicio_dia,
+        Reserva.inicio <= fim_dia,
+    ).order_by(Reserva.inicio).all()
+
+    return render_template(
+        "recepcionista_painel.html",
+        salas=salas,
+        reservas=reservas,
+        data_filtro=data_filtro,
+        hoje=datetime.now().date(),
+    )
 
 
 @recepcionista_bp.route("/reserva/nova", methods=["GET", "POST"])

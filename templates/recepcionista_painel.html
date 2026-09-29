@@ -28,6 +28,24 @@
     </div>
 </div>
 
+<div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-4 flex items-center gap-3 flex-wrap">
+    <label for="filtro-data" class="text-sm font-medium text-slate-700">📅 Reuniões do dia:</label>
+    <input type="date" id="filtro-data" value="{{ data_filtro.strftime('%Y-%m-%d') }}"
+           class="px-3 py-2 rounded-lg border border-slate-200 text-sm">
+    <button onclick="aplicarFiltro()"
+            class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition">
+        Aplicar filtro
+    </button>
+    <button onclick="aplicarFiltroHoje()"
+            class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition">
+        Hoje
+    </button>
+    <span class="text-sm text-slate-400">
+        Exibindo {{ reservas|length }} reunião(ões)
+        {% if data_filtro == hoje %}de hoje{% else %}de {{ data_filtro.strftime('%d/%m/%Y') }}{% endif %}
+    </span>
+</div>
+
 <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
     <table class="w-full text-sm min-w-[900px]">
         <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
@@ -89,11 +107,26 @@
             {% else %}
             <tr>
                 <td colspan="7" class="px-6 py-8 text-center text-slate-400 text-sm">
-                    Nenhuma reunião marcada no momento.
+                    Nenhuma reunião marcada para {{ data_filtro.strftime('%d/%m/%Y') }}.
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function aplicarFiltro() {
+    const data = document.getElementById('filtro-data').value;
+    if (data) {
+        window.location.href = '{{ url_for("recepcionista.painel") }}?data=' + data;
+    }
+}
+
+function aplicarFiltroHoje() {
+    window.location.href = '{{ url_for("recepcionista.painel") }}';
+}
+</script>
 {% endblock %}

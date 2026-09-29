@@ -74,10 +74,33 @@
                         </span>
                     </td>
                     <td class="px-6 py-3">
-                        <form method="POST" action="{{ url_for('admin.desativar_usuario', usuario_id=u.id) }}">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <!-- Alterar senha -->
+                            <button type="button" onclick="toggleSenha({{ u.id }})"
+                                    class="text-xs px-2 py-1 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100">
+                                Senha
+                            </button>
+                            <form method="POST" action="{{ url_for('admin.desativar_usuario', usuario_id=u.id) }}">
+                                <button type="submit"
+                                        class="text-xs px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
+                                    {{ 'Desativar' if u.ativo else 'Ativar' }}
+                                </button>
+                            </form>
+                        </div>
+                        <!-- Formulário de alterar senha (oculto) -->
+                        <form method="POST" action="{{ url_for('admin.alterar_senha', usuario_id=u.id) }}"
+                              id="form-senha-{{ u.id }}" class="hidden mt-2 flex items-center gap-2">
+                            <input type="password" name="senha" placeholder="Nova senha" required
+                                   class="text-xs border border-slate-200 rounded-lg px-2 py-1 w-28">
+                            <input type="password" name="confirmar_senha" placeholder="Confirmar" required
+                                   class="text-xs border border-slate-200 rounded-lg px-2 py-1 w-28">
                             <button type="submit"
-                                    class="text-xs px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
-                                {{ 'Desativar' if u.ativo else 'Ativar' }}
+                                    class="text-xs px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white">
+                                Salvar
+                            </button>
+                            <button type="button" onclick="toggleSenha({{ u.id }})"
+                                    class="text-xs px-2 py-1 text-slate-400 hover:text-slate-600">
+                                Cancelar
                             </button>
                         </form>
                     </td>
@@ -87,4 +110,16 @@
         </table>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleSenha(id) {
+    const form = document.getElementById('form-senha-' + id);
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.querySelector('input[name="senha"]').focus();
+    }
+}
+</script>
 {% endblock %}
