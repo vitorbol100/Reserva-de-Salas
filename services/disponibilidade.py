@@ -26,7 +26,7 @@ def horario_disponivel(sala_id, inicio, fim, ignorar_reserva_id=None):
         Reserva.sala_id.in_(ids_para_checar),
         Reserva.status.in_(["confirmada", "em_andamento"]),
         Reserva.inicio < fim,
-    Reserva.fim > inicio,
+        Reserva.fim > inicio,
     )
     if ignorar_reserva_id:
         query_reservas = query_reservas.filter(Reserva.id != ignorar_reserva_id)
@@ -49,14 +49,14 @@ def horario_disponivel(sala_id, inicio, fim, ignorar_reserva_id=None):
 
 def criar_bloqueios_automaticos(reserva: Reserva):
     sala = db.session.get(Sala, reserva.sala_id)
-    for sala_vinculada_id in sala.ids_vinculados()
+    for sala_vinculada_id in sala.ids_vinculados():
         bloqueio = BloqueioSala(
-    sala_id=sala_vinculada_id,
+            sala_id=sala_vinculada_id,
             inicio=reserva.inicio,
             fim=reserva.fim,
             motivo=f"Uso automático — {sala.nome} reservada",
             automatico=True,
-            reserve_origem_id=reserva.id,
+            reserva_origem_id=reserva.id,
         )
         db.session.add(bloqueio)
     db.session.commit()

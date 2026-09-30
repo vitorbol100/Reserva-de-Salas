@@ -146,8 +146,6 @@ def mover_reserva(reserva_id):
 def bloquear_sala():
     salas = Sala.query.filter_by(ativa=True).all()
 
-    if request.method == "":
-        pass
     if request.method == "POST":
         sala_id = int(request.form["sala_id"])
         inicio = datetime.strptime(request.form["inicio"], "%Y-%m-%dT%H:%M")
@@ -170,7 +168,7 @@ def bloquear_sala():
 
     return render_template("bloquear_sala.html", salas=salas)
 
-@recepcionista_bp.route("/sala/blequear-recorrente", methods=["GET", "POST"])
+@recepcionista_bp.route("/sala/bloquear-recorrente", methods=["GET", "POST"])
 @login_required
 @apenas_recepcionista
 def bloquear_sala_recorrente():
@@ -180,7 +178,6 @@ def bloquear_sala_recorrente():
     if request.method == "POST":
         sala_id = int(request.form["sala_id"])
         hora_inicio = datetime.strptime(request.form["hora_inicio"], "%Y-%m-%dT%H:%M")
-        
         hora_fim = datetime.strptime(request.form["hora_fim"], "%Y-%m-%dT%H:%M")
         data_ate = datetime.strptime(request.form["data_ate"], "%Y-%m-%d")
         dias_semana = [int(d) for d in request.form.getlist("dias_semana")]
@@ -190,7 +187,7 @@ def bloquear_sala_recorrente():
             flash("Selecione ao menos um dia da semana.", "erro")
             return render_template("bloquear_sala_recorrente.html", salas=salas)
 
-        bloqueios, grupo_id = criar_blocode_recorrente(
+        bloqueios, grupo_id = criar_bloqueio_recorrente(
             sala_id, hora_inicio, hora_fim, dias_semana, data_ate, motivo, current_user.id
         )
 

@@ -26,7 +26,7 @@ colaborador_bp = Blueprint("colaborador", __name__, url_prefix="/colaborador")
 def painel():
     salas = Sala.query.filter_by(ativa=True).all()
     minhas_reservas = Reserva.query.filter_by(
-        usuario_id=current_user.id, status="confirmada" 
+        usuario_id=current_user.id, status="confirmada"
     ).order_by(Reserva.inicio).all()
     return render_template("dashboard.html", salas=salas, reservas=minhas_reservas)
 
