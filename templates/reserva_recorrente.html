@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Reserva Recorrente{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="mb-6">
+        <a href="{{ url_for('colaborador.painel') }}"
+           class="text-sm text-indigo-600 hover:text-indigo-800">
+            ← Voltar para o painel
+        </a>
+
+        <h1 class="text-2xl font-semibold text-slate-800 mt-3">
+            Criar reserva recorrente
+        </h1>
+
+        <p class="text-sm text-slate-500 mt-1">
+            Crie a mesma reunião repetida nos dias da semana escolhidos, até a data limite.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <form method="POST" class="space-y-6">
+
+            <div>
+                <label for="sala_id" class="block text-sm font-medium text-slate-700">
+                    Sala
+                </label>
+
+                <select
+                    id="sala_id"
+                    name="sala_id"
+                    required
+                    class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                           focus:outline-none focus:ring-2 focus:ring-indigo-400">
+
+                    <option value="">Selecione uma sala</option>
+
+                    {% for sala in salas %}
+                        <option value="{{ sala.id }}">
+                            {{ sala.nome }} — {{ sala.capacidade }} lugares
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="titulo" class="block text-sm font-medium text-slate-700">
+                    Título da reunião
+                </label>
+
+                <input
+                    type="text"
+                    id="titulo"
+                    name="titulo"
+                    required
+                    placeholder="Ex.: Reunião semanal da equipe"
+                    class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                           focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-3">
+                    Dias da semana
+                </label>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {% for dia, nome_dia in [(0, 'Segunda'), (1, 'Terça'), (2, 'Quarta'), (3, 'Quinta'), (4, 'Sexta'), (5, 'Sábado'), (6, 'Domingo')] %}
+                    <label class="flex items-center gap-2 p-3 rounded-lg border border-slate-200
+                                  hover:bg-slate-50 cursor-pointer">
+                        <input type="checkbox" name="dias_semana" value="{{ dia }}"
+                               class="rounded text-indigo-600 focus:ring-indigo-400">
+                        <span class="text-sm text-slate-700">{{ nome_dia }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="hora_inicio" class="block text-sm font-medium text-slate-700">
+                        Primeiro dia e horário inicial
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="hora_inicio"
+                        name="hora_inicio"
+                        required
+                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                               focus:outline-none focus:ring-2 focus:ring-indigo-400">
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        A data serve como início da recorrência.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="hora_fim" class="block text-sm font-medium text-slate-700">
+                        Horário final
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="hora_fim"
+                        name="hora_fim"
+                        required
+                        class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                               focus:outline-none focus:ring-2 focus:ring-indigo-400">
+
+                    <p class="text-xs text-slate-400 mt-1">
+                        O sistema utilizará somente o horário final.
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <label for="data_ate" class="block text-sm font-medium text-slate-700">
+                    Repetir até
+                </label>
+
+                <input
+                    type="date"
+                    id="data_ate"
+                    name="data_ate"
+                    required
+                    class="w-full mt-1 px-4 py-2.5 rounded-lg border border-slate-200
+                           focus:outline-none focus:ring-2 focus:ring-indigo-400">
+
+                <p class="text-xs text-slate-400 mt-1">
+                    Serão criadas reservas até esta data.
+                </p>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <a href="{{ url_for('colaborador.painel') }}"
+                   class="px-5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200
+                          text-slate-700 text-sm transition">
+                    Cancelar
+                </a>
+
+                <button
+                    type="submit"
+                    class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700
+                           text-white text-sm font-medium transition">
+                    Criar reservas
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

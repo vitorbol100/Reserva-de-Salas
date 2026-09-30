@@ -17,6 +17,10 @@
            class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition">
             Bloqueio recorrente
         </a>
+        <a href="{{ url_for('recepcionista.calendario') }}"
+           class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition">
+            Calendário
+        </a>
         <a href="{{ url_for('relatorios.ocupacao') }}"
            class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm transition">
             Relatório
@@ -29,9 +33,15 @@
 </div>
 
 <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-4 flex items-center gap-3 flex-wrap">
-    <label for="filtro-data" class="text-sm font-medium text-slate-700">📅 Reuniões do dia:</label>
-    <input type="date" id="filtro-data" value="{{ data_filtro.strftime('%Y-%m-%d') }}"
+    <label class="text-sm font-medium text-slate-700">📅 Reuniões</label>
+
+    <span class="text-sm text-slate-500">de</span>
+    <input type="date" id="filtro-data-ini" value="{{ data_ini.strftime('%Y-%m-%d') }}"
            class="px-3 py-2 rounded-lg border border-slate-200 text-sm">
+    <span class="text-sm text-slate-500">até</span>
+    <input type="date" id="filtro-data-fim" value="{{ data_fim.strftime('%Y-%m-%d') }}"
+           class="px-3 py-2 rounded-lg border border-slate-200 text-sm">
+
     <button onclick="aplicarFiltro()"
             class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition">
         Aplicar filtro
@@ -42,7 +52,13 @@
     </button>
     <span class="text-sm text-slate-400">
         Exibindo {{ reservas|length }} reunião(ões)
-        {% if data_filtro == hoje %}de hoje{% else %}de {{ data_filtro.strftime('%d/%m/%Y') }}{% endif %}
+        {% if modo_periodo %}
+            de {{ data_ini.strftime('%d/%m/%Y') }} a {{ data_fim.strftime('%d/%m/%Y') }}
+        {% elif data_filtro == hoje %}
+            de hoje
+        {% else %}
+            de {{ data_filtro.strftime('%d/%m/%Y') }}
+        {% endif %}
     </span>
 </div>
 
@@ -119,9 +135,12 @@
 {% block scripts %}
 <script>
 function aplicarFiltro() {
-    const data = document.getElementById('filtro-data').value;
-    if (data) {
-        window.location.href = '{{ url_for("recepcionista.painel") }}?data=' + data;
+    const ini = document.getElementById('filtro-data-ini').value;
+    const fim = document.getElementById('filtro-data-fim').value;
+    if (ini && fim) {
+        window.location.href = '{{ url_for("recepcionista.painel") }}?data_ini=' + ini + '&data_fim=' + fim;
+    } else if (ini) {
+        window.location.href = '{{ url_for("recepcionista.painel") }}?data=' + ini;
     }
 }
 

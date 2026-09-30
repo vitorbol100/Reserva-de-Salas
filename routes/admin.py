@@ -82,6 +82,22 @@ def alterar_senha(usuario_id):
     return redirect(url_for("admin.painel"))
 
 
+@admin_bp.route("/usuario/<int:usuario_id>/nome", methods=["POST"])
+@login_required
+@apenas_admin
+def alterar_nome(usuario_id):
+    usuario = db.get_or_404(Usuario, usuario_id)
+    nome = request.form.get("nome", "").strip()
+    if not nome:
+        flash("O nome não pode ficar vazio.", "erro")
+        return redirect(url_for("admin.painel"))
+    usuario.nome = nome
+    db.session.commit()
+    registrar_log("alterou_nome", "usuario", usuario.id, f"Nome alterado para '{nome}'")
+    flash("Nome atualizado.", "sucesso")
+    return redirect(url_for("admin.painel"))
+
+
 @admin_bp.route("/usuario/<int:usuario_id>/desativar", methods=["POST"])
 @login_required
 @apenas_admin

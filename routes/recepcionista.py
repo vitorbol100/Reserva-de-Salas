@@ -32,18 +32,32 @@ def apenas_recepcionista(f):
 def painel():
     salas = Sala.query.filter_by(ativa=True).all()
 
-    # Filtro por data (padrão: hoje). Aceita ?data=AAAA-MM-DD na URL.
+    # Filtro por período (padrão: hoje). Aceita ?data=AAAA-MM-DD (dia único)
+    # ou ?data_ini=AAAA-MM-DD&data_fim=AAAA-MM-DD (período).
+    hoje = datetime.now().date()
     data_str = request.args.get("data")
-    if data_str:
-        try:
-            data_filtro = datetime.strptime(data_str, "%Y-%m-%d").date()
-        except ValueError:
-            data_filtro = datetime.now().date()
-    else:
-        data_filtro = datetime.now().date()
+    data_ini_str = request.args.get("data_ini")
+    data_fim_str = request.args.get("data_fim")
 
-    inicio_dia = datetime.combine(data_filtro, datetime.min.time())
-    fim_dia = datetime.combine(data_filtro, datetime.max.time())
+    def _parse_data(valor):
+        try:
+            return datetime.strptime(valor, "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            return None
+
+    if data_ini_str or data_fim_str:
+        data_ini = _parse_data(data_ini_str) or hoje
+        data_fim = _parse_data(data_fim_str) or data_ini
+        if data_fim < data_ini:
+            data_ini, data_fim = data_fim, data_ini
+        modo_periodo = True
+    else:
+        data_ini = _parse_data(data_str) or hoje
+        data_fim = data_ini
+        modo_periodo = False
+
+    inicio_dia = datetime.combine(data_ini, datetime.min.time())
+    fim_dia = datetime.combine(data_fim, datetime.max.time())
 
     reservas = Reserva.query.filter(
         Reserva.status != "cancelada",
@@ -55,9 +69,19 @@ def painel():
         "recepcionista_painel.html",
         salas=salas,
         reservas=reservas,
-        data_filtro=data_filtro,
-        hoje=datetime.now().date(),
+        data_filtro=data_ini,
+        data_ini=data_ini,
+        data_fim=data_fim,
+        modo_periodo=modo_periodo,
+        hoje=hoje,
     )
+
+
+@recepcionista_bp.route("/calendario")
+@login_required
+@apenas_recepcionista
+def calendario():
+    return render_template("recepcionista_calendario.html")
 
 
 @recepcionista_bp.route("/reserva/nova", methods=["GET", "POST"])

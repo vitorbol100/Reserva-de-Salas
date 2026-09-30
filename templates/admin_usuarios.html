@@ -55,7 +55,20 @@
             <tbody class="divide-y divide-slate-100">
                 {% for u in usuarios %}
                 <tr class="hover:bg-slate-50">
-                    <td class="px-6 py-3 text-slate-700">{{ u.nome }}</td>
+                    <td class="px-6 py-3">
+                        <span id="nome-exibicao-{{ u.id }}" class="text-slate-700 cursor-pointer hover:text-indigo-600"
+                              title="Clique para editar o nome"
+                              onclick="toggleNome({{ u.id }})">{{ u.nome }}</span>
+                        <form method="POST" action="{{ url_for('admin.alterar_nome', usuario_id=u.id) }}"
+                              id="form-nome-{{ u.id }}" class="hidden mt-1 flex items-center gap-2">
+                            <input type="text" name="nome" value="{{ u.nome }}" required
+                                   class="text-xs border border-slate-200 rounded-lg px-2 py-1 w-40">
+                            <button type="submit"
+                                    class="text-xs px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Salvar</button>
+                            <button type="button" onclick="toggleNome({{ u.id }})"
+                                    class="text-xs px-2 py-1 text-slate-400 hover:text-slate-600">Cancelar</button>
+                        </form>
+                    </td>
                     <td class="px-6 py-3 text-slate-500">{{ u.email }}</td>
                     <td class="px-6 py-3">
                         <form method="POST" action="{{ url_for('admin.alterar_nivel', usuario_id=u.id) }}">
@@ -114,6 +127,16 @@
 
 {% block scripts %}
 <script>
+function toggleNome(id) {
+    const form = document.getElementById('form-nome-' + id);
+    const span = document.getElementById('nome-exibicao-' + id);
+    form.classList.toggle('hidden');
+    span.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        form.querySelector('input[name="nome"]').focus();
+    }
+}
+
 function toggleSenha(id) {
     const form = document.getElementById('form-senha-' + id);
     form.classList.toggle('hidden');

@@ -13,6 +13,10 @@
            class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition">
             + Nova reserva
         </a>
+        <a href="{{ url_for('colaborador.reserva_recorrente') }}"
+           class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium transition">
+            + Reserva recorrente
+        </a>
     </div>
 </div>
 
@@ -58,7 +62,12 @@
     <tbody class="divide-y divide-slate-100">
         {% for r in reservas %}
         <tr class="hover:bg-slate-50">
-            <td class="px-6 py-3 text-slate-700">{{ r.titulo }}</td>
+            <td class="px-6 py-3 text-slate-700">
+                {{ r.titulo }}
+                {% if r.grupo_recorrencia_id %}
+                <span class="ml-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700" title="Parte de uma reserva recorrente">🔁</span>
+                {% endif %}
+            </td>
             <td class="px-6 py-3 text-slate-500">{{ r.sala.nome }}</td>
             <td class="px-6 py-3 text-slate-500">{{ r.inicio.strftime('%d/%m %H:%M') }}</td>
             <td class="px-6 py-3 text-slate-500">{{ r.fim.strftime('%d/%m %H:%M') }}</td>
@@ -76,6 +85,15 @@
                        class="text-xs px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100">
                         Editar
                     </a>
+                    {% if r.grupo_recorrencia_id %}
+                    <form method="POST" action="{{ url_for('colaborador.cancelar_reserva_individual', reserva_id=r.id) }}"
+                          onsubmit="return confirm('Cancelar SOMENTE esta ocorrência ({{ r.inicio.strftime('%d/%m') }})? As demais da recorrência continuam.');">
+                        <button type="submit"
+                                class="text-xs px-2 py-1 rounded-lg bg-red-50 text-red-700 hover:bg-red-100">
+                            Cancelar
+                        </button>
+                    </form>
+                    {% else %}
                     <form method="POST" action="{{ url_for('colaborador.excluir_minha_reserva', reserva_id=r.id) }}"
                           onsubmit="return confirm('Deseja cancelar esta reunião?');">
                         <button type="submit"
@@ -83,6 +101,7 @@
                             Excluir
                         </button>
                     </form>
+                    {% endif %}
                 </div>
             </td>
         </tr>
@@ -93,4 +112,46 @@
     <p class="px-6 py-8 text-center text-slate-400 text-sm">Você ainda não tem reuniões marcadas.</p>
     {% endif %}
 </div>
+
+{% if recorrencias %}
+<div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mt-8">
+    <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+        <h2 class="font-medium text-slate-800">Minhas recorrências</h2>
+    </div>
+    <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+            <tr>
+                <th class="text-left px-6 py-3">Título</th>
+                <th class="text-left px-6 py-3">Sala</th>
+                <th class="text-left px-6 py-3">Horário</th>
+                <th class="text-left px-6 py-3">Dias</th>
+                <th class="text-left px-6 py-3">Período</th>
+                <th class="text-left px-6 py-3">Próximas</th>
+                <th class="text-left px-6 py-3">Ações</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for rec in recorrencias %}
+            <tr class="hover:bg-slate-50">
+                <td class="px-6 py-3 text-slate-700">{{ rec.titulo }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ rec.sala }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ rec.hora }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ rec.dias }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ rec.periodo }}</td>
+                <td class="px-6 py-3 text-slate-500">{{ rec.proximas }}</td>
+                <td class="px-6 py-3">
+                    <form method="POST" action="{{ url_for('colaborador.cancelar_recorrencia', grupo_id=rec.grupo_id) }}"
+                          onsubmit="return confirm('Cancelar TODAS as {{ rec.proximas }} reuniões futuras desta recorrência?');">
+                        <button type="submit"
+                                class="text-xs px-2 py-1 rounded-lg bg-red-50 text-red-700 hover:bg-red-100">
+                            Cancelar todas
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
 {% endblock %}

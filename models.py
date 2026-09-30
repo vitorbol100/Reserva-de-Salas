@@ -67,6 +67,9 @@ class Reserva(db.Model):
 
     uid_calendario = db.Column(db.String(120), unique=True)
 
+    # recorrência de reservas (agrupa as ocorrências criadas juntas)
+    grupo_recorrencia_id = db.Column(db.String(36), nullable=True)
+
     usuario = db.relationship(
         "Usuario",
         foreign_keys=[usuario_id],
