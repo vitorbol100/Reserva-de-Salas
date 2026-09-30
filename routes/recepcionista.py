@@ -101,7 +101,7 @@ def nova_reserva_para_colaborador():
 @apenas_recepcionista
 def excluir_reserva(reserva_id):
     from models import Reserva
-    reserva = Reserva.query.get_or_404(reserva_id)
+    reserva = db.get_or_404(Reserva, reserva_id)
     reserva.status = "cancelada"
     remover_bloqueios_automaticos(reserva.id)
     db.session.commit()
@@ -118,7 +118,7 @@ def excluir_reserva(reserva_id):
 @apenas_recepcionista
 def mover_reserva(reserva_id):
     from models import Reserva
-    reserva = Reserva.query.get_or_404(reserva_id)
+    reserva = db.get_or_404(Reserva, reserva_id)
     nova_sala_id = int(request.form["nova_sala_id"])
     sala_antiga_nome = reserva.sala.nome
 
@@ -146,6 +146,8 @@ def mover_reserva(reserva_id):
 def bloquear_sala():
     salas = Sala.query.filter_by(ativa=True).all()
 
+    if request.method == "":
+        pass
     if request.method == "POST":
         sala_id = int(request.form["sala_id"])
         inicio = datetime.strptime(request.form["inicio"], "%Y-%m-%dT%H:%M")
@@ -168,7 +170,7 @@ def bloquear_sala():
 
     return render_template("bloquear_sala.html", salas=salas)
 
-@recepcionista_bp.route("/sala/bloquear-recorrente", methods=["GET", "POST"])
+@recepcionista_bp.route("/sala/blequear-recorrente", methods=["GET", "POST"])
 @login_required
 @apenas_recepcionista
 def bloquear_sala_recorrente():
@@ -178,6 +180,7 @@ def bloquear_sala_recorrente():
     if request.method == "POST":
         sala_id = int(request.form["sala_id"])
         hora_inicio = datetime.strptime(request.form["hora_inicio"], "%Y-%m-%dT%H:%M")
+        
         hora_fim = datetime.strptime(request.form["hora_fim"], "%Y-%m-%dT%H:%M")
         data_ate = datetime.strptime(request.form["data_ate"], "%Y-%m-%d")
         dias_semana = [int(d) for d in request.form.getlist("dias_semana")]
@@ -187,7 +190,7 @@ def bloquear_sala_recorrente():
             flash("Selecione ao menos um dia da semana.", "erro")
             return render_template("bloquear_sala_recorrente.html", salas=salas)
 
-        bloqueios, grupo_id = criar_bloqueio_recorrente(
+        bloqueios, grupo_id = criar_blocode_recorrente(
             sala_id, hora_inicio, hora_fim, dias_semana, data_ate, motivo, current_user.id
         )
 

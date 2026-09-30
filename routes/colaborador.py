@@ -26,7 +26,7 @@ colaborador_bp = Blueprint("colaborador", __name__, url_prefix="/colaborador")
 def painel():
     salas = Sala.query.filter_by(ativa=True).all()
     minhas_reservas = Reserva.query.filter_by(
-        usuario_id=current_user.id, status="confirmada"
+        usuario_id=current_user.id, status="confirmada" 
     ).order_by(Reserva.inicio).all()
     return render_template("dashboard.html", salas=salas, reservas=minhas_reservas)
 
@@ -113,7 +113,7 @@ def eventos_calendario():
 @colaborador_bp.route("/sala/<int:sala_id>/horarios")
 @login_required
 def horarios_sala(sala_id):
-    sala = Sala.query.get_or_404(sala_id)
+    sala = db.get_or_404(Sala, sala_id)
 
     reservas = Reserva.query.filter(
         Reserva.sala_id == sala_id,
@@ -127,7 +127,7 @@ def horarios_sala(sala_id):
 @colaborador_bp.route("/reserva/<int:reserva_id>/excluir", methods=["POST"])
 @login_required
 def excluir_minha_reserva(reserva_id):
-    reserva = Reserva.query.get_or_404(reserva_id)
+    reserva = db.get_or_404(Reserva, reserva_id)
 
     # Garante que o colaborador só pode excluir a própria reserva
     if reserva.usuario_id != current_user.id:
@@ -147,7 +147,7 @@ def excluir_minha_reserva(reserva_id):
 @colaborador_bp.route("/reserva/<int:reserva_id>/editar", methods=["GET", "POST"])
 @login_required
 def editar_minha_reserva(reserva_id):
-    reserva = Reserva.query.get_or_404(reserva_id)
+    reserva = db.get_or_404(Reserva, reserva_id)
 
     if reserva.usuario_id != current_user.id:
         abort(403)

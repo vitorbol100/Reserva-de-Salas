@@ -52,7 +52,7 @@ def criar_usuario():
 @login_required
 @apenas_admin
 def alterar_nivel(usuario_id):
-    usuario = Usuario.query.get_or_404(usuario_id)
+    usuario = db.get_or_404(Usuario, usuario_id)
     usuario.nivel = request.form["nivel"]
     db.session.commit()
     flash("Permissão atualizada.", "sucesso")
@@ -63,7 +63,7 @@ def alterar_nivel(usuario_id):
 @login_required
 @apenas_admin
 def alterar_senha(usuario_id):
-    usuario = Usuario.query.get_or_404(usuario_id)
+    usuario = db.get_or_404(Usuario, usuario_id)
     senha = request.form.get("senha", "")
     confirmar = request.form.get("confirmar_senha", "")
 
@@ -86,7 +86,7 @@ def alterar_senha(usuario_id):
 @login_required
 @apenas_admin
 def desativar_usuario(usuario_id):
-    usuario = Usuario.query.get_or_404(usuario_id)
+    usuario = db.get_or_404(Usuario, usuario_id)
     usuario.ativo = not usuario.ativo
     db.session.commit()
     flash("Status do usuário atualizado.", "sucesso")
