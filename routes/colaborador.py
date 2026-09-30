@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
@@ -51,6 +52,27 @@ def nova_reserva():
             flash(mensagem, "erro")
             return render_template("nova_reserva.html", salas=salas)
 
+        participantes_raw = request.form.get("participantes", "")
+
+        # O separador oficial é vírgula. Espaço, ponto e vírgula etc. geram alerta.
+        emails_participantes = [
+            e.strip() for e in participantes_raw.split(",") if e.strip()
+        ]
+
+        # Valida formato de cada e-mail ANTES de criar a reserva (rejeita
+        # texto com espaço, ponto e vírgula, sem @ etc. — evita erro 500 no envio).
+        padrao_email = re.compile(r"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$")
+        emails_invalidos = [
+            e for e in emails_participantes if not padrao_email.match(e)
+        ]
+        if emails_invalidos:
+            flash(
+                "E-mail(s) inválido(s): " + ", ".join(emails_invalidos)
+                + ". Separe os e-mails por VÍRGULA (ex.: a@conebel.com.br, b@conebel.com.br).",
+                "erro",
+            )
+            return render_template("nova_reserva.html", salas=salas)
+
         reserva = Reserva(
             sala_id=sala_id,
             usuario_id=current_user.id,
@@ -61,13 +83,6 @@ def nova_reserva():
         )
         db.session.add(reserva)
         db.session.commit()
-
-        participantes_raw = request.form.get("participantes", "")
-        emails_participantes = [
-            email.strip()
-            for email in participantes_raw.split(",")
-            if email.strip()
-        ]
 
         for email in emails_participantes:
             participante = ParticipanteReserva(

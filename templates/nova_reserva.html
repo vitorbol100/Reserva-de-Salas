@@ -104,6 +104,10 @@
                        focus:border-indigo-500 resize-none"
             ></textarea>
 
+            <p id="erro-participantes" class="mt-1 text-xs text-red-600 hidden">
+                ⚠️ E-mail inválido ou separador errado. Use vírgula entre os e-mails (ex.: a@conebel.com.br, b@conebel.com.br).
+            </p>
+
             <p class="mt-1 text-xs text-slate-500">
                 Opcional. Separe os e-mails por vírgula.
             </p>
@@ -167,6 +171,46 @@ async function verificarDisponibilidade() {
 [salaSelect, inicioInput, fimInput].forEach(el =>
     el.addEventListener('change', verificarDisponibilidade)
 );
+
+// ===== Validação dos e-mails dos participantes =====
+const campoParticipantes = document.getElementById('participantes');
+const erroParticipantes = document.getElementById('erro-participantes');
+const formReserva = campoParticipantes.closest('form');
+const regexEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+function validarParticipantes() {
+    const texto = campoParticipantes.value;
+    if (!texto.trim()) {          // campo opcional, vazio é válido
+        erroParticipantes.classList.add('hidden');
+        return true;
+    }
+
+    // O separador oficial é vírgula. Espaço e ponto e vírgula são erros comuns.
+    const candidatos = texto.split(',').map(e => e.trim()).filter(e => e);
+    const invalidos = candidatos.filter(e => !regexEmail.test(e));
+
+    if (invalidos.length > 0) {
+        erroParticipantes.classList.remove('hidden');
+        erroParticipantes.textContent = '⚠️ E-mail inválido: ' + invalidos.join(', ')
+            + '. Separe os e-mails por VÍRGULA (ex.: a@conebel.com.br, b@conebel.com.br).';
+        return false;
+    }
+
+    erroParticipantes.classList.add('hidden');
+    return true;
+}
+
+// valida em tempo real, enquanto digita
+campoParticipantes.addEventListener('input', validarParticipantes);
+
+// bloqueia o envio se houver e-mail inválido
+formReserva.addEventListener('submit', handler);
+function handler(e) {
+    if (!validarParticipantes()) {
+        e.preventDefault();
+        campoParticipantes.focus();
+    }
+}
 </script>
 
 {% endblock %}
